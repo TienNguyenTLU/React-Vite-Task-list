@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import SuccessAlert from './SuccessAlert';
 const API_URL = 'http://localhost:8080/tasks'; // Địa chỉ API của bạn
 function AddModalComponent() {
     const [isOpen, setIsOpen] = useState(false);
@@ -8,15 +8,16 @@ function AddModalComponent() {
         taskDescription: '',
         dueDate: ''
     });
-     const [error, setError] = useState(null);
+    const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState('');
+
     const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevData => ({
         ...prevData,
         [name]: value
     }));
-};
-
+    };
     const handleClose = () => {
         setIsOpen(false);
     };
@@ -24,29 +25,34 @@ function AddModalComponent() {
         setIsOpen(true);
     };
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    try {
-        const res = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Something went wrong');
-        console.log('Task created:', data);
-        handleClose();
-    } catch (err) {
-        console.error('Submit error:', err);
-        setError(err.message);
-    }
-};
-
+        e.preventDefault();
+        setError(null);
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Something went wrong');
+            console.log('Task created:', data);
+            setSuccessMessage('Task added successfully!');
+            setTimeout(() => {
+            setSuccessMessage('');
+            }, 3000);
+            handleClose();
+            return <SuccessAlert message="Task added successfully!" />;
+        } catch (err) {
+            console.error('Submit error:', err);
+            setError(err.message);
+        }
+    };
     return (
         <>
             <button className="btn btn-primary" onClick={handleOpen}>
                 Add Task
             </button>
+            <SuccessAlert message={successMessage} />
             <dialog open={isOpen} id="my_modal_3" className="modal modal-middle sm:modal-middle">
                 <div className="modal-box w-11/12 max-w-lg">
                     <form method="dialog" onSubmit={(e) => { e.preventDefault(); handleClose(); }}>

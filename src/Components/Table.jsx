@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import AddModal from "./AddModal";
 import DeleteAlert from "./DeleteAlert";
+import { useEffect } from "react";
+import axios from "axios";
 function Table()
 {
-    const [Tasks, setTasks] = useState([
-        { id: 1, name: "Task 1", desc:"Perform Task 1" , status: "In Progress" , date: "2025-06-06"},
-        { id: 2, name: "Task 2", desc:"Perform Task 2" , status: "Completed" , date: "2025-06-07"},
-        { id: 3, name: "Task 3", desc:"Perform Task 3" , status: "Pending" , date: "2025-06-08"},
-    ]);
+    const [Tasks, setTasks] = useState([]);
+    useEffect(() => {
+    axios.get('http://localhost:8080/tasks')
+        .then(response => {
+            console.log('Data received from API:', response.data); // Dữ liệu nằm trong .data
+            setTasks(response.data);
+        })
+        .catch(error => {
+            console.error('Error fetching data: ', error);
+        });
+}, []);
     function setStatusColor(status)
     {
         switch (status) {
@@ -34,6 +42,7 @@ function Table()
                     <th>No.</th>
                     <th>Task name</th>
                     <th>Description</th>
+                    <th>Due Date</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -42,8 +51,9 @@ function Table()
                 {Tasks.map((task,index) => (
                     <tr key={task.id} className="hover">
                         <th>{index + 1}</th>
-                        <td>{task.name}</td>
-                        <td>{task.desc}</td>
+                        <td>{task.taskName}</td>
+                        <td>{task.description}</td>
+                        <td>{task.dueDate}</td>
                         <td>
                             <span className={`badge ${setStatusColor(task.status)}`}>
                                 {task.status}

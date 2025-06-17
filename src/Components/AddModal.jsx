@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+const API_URL = 'http://localhost:8080/tasks'; // Địa chỉ API của bạn
 function AddModalComponent() {
     const [isOpen, setIsOpen] = useState(false);
     const [formData, setFormData] = useState({
@@ -7,24 +8,40 @@ function AddModalComponent() {
         taskDescription: '',
         dueDate: ''
     });
+     const [error, setError] = useState(null);
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+        ...prevData,
+        [name]: value
+    }));
+};
+
     const handleClose = () => {
         setIsOpen(false);
     };
     const handleOpen = () => {
         setIsOpen(true);
     };
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Form submitted!' + JSON.stringify(formData, null, 2));
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    try {
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Something went wrong');
+        console.log('Task created:', data);
         handleClose();
-    };
+    } catch (err) {
+        console.error('Submit error:', err);
+        setError(err.message);
+    }
+};
+
     return (
         <>
             <button className="btn btn-primary" onClick={handleOpen}>
@@ -42,10 +59,12 @@ function AddModalComponent() {
                                 <span className="label-text text-base">Task name:</span>
                             </label>
                             <input
+                                name="taskName"
                                 type="text"
                                 className="input input-bordered w-full"
                                 placeholder="Type task name here"
                                 required
+                                onChange={handleChange}
                             />
                         </fieldset>
                         <fieldset className="form-control w-full mb-4">
@@ -53,8 +72,11 @@ function AddModalComponent() {
                                 <span className="label-text text-base">Task description:</span>
                             </label>
                             <textarea
+                                name="description"
+                                required
                                 className="textarea textarea-bordered h-24 w-full"
                                 placeholder="Enter task description"
+                                onChange={handleChange}
                             ></textarea>
                         </fieldset>
                         <fieldset className="form-control w-full mb-6">
@@ -62,9 +84,11 @@ function AddModalComponent() {
                                 <span className="label-text text-base">Due date:</span>
                             </label>
                             <input
+                                name="dueDate"
                                 type="date"
                                 className="input input-bordered w-full"
                                 required
+                                onChange={handleChange}
                             />
                         </fieldset>
                         <div className="flex justify-end gap-3">

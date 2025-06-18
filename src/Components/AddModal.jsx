@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SuccessAlert from './SuccessAlert';
 const API_URL = 'http://localhost:8080/tasks'; // Địa chỉ API của bạn
-function AddModalComponent() {
+function AddModalComponent({fetchTasks}) {
     const [isOpen, setIsOpen] = useState(false);
     const [formData, setFormData] = useState({
         taskName: '',
@@ -10,7 +10,6 @@ function AddModalComponent() {
     });
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
-
     const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevData => ({
@@ -40,6 +39,7 @@ function AddModalComponent() {
             setTimeout(() => {
             setSuccessMessage('');
             }, 3000);
+            fetchTasks();
             handleClose();
             return <SuccessAlert message="Task added successfully!" />;
         } catch (err) {
@@ -111,5 +111,4 @@ function AddModalComponent() {
         </>
     );
 }
-
 export default AddModalComponent;

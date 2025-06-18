@@ -4,7 +4,7 @@ import DeleteAlert from "./DeleteAlert";
 import { useEffect } from "react";
 import axios from "axios";
 import EditModal from "./EditModal";
-function Table()
+function Table({InputValue})
 {
     const [Tasks, setTasks] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -39,6 +39,14 @@ function Table()
                 return "text-white";
         }
     }
+    function filterTasks(tasks, inputValue) {
+        if (!inputValue)
+            return tasks;
+        return tasks.filter(task =>
+            task.taskName.toLowerCase().includes(inputValue.toLowerCase()) ||
+            task.description.toLowerCase().includes(inputValue.toLowerCase())
+        );
+    }
     return (
         <div className="container mx-auto p-4">
         <div className="flex justify-between items-center mb-4">
@@ -58,7 +66,7 @@ function Table()
                 </tr>
                 </thead>
                 <tbody>
-                {currentTasks.map((task,index) => (
+                {filterTasks(Tasks,InputValue).map((task,index) => (
                     <tr key={task.id} className="hover">
                         <th>{index + 1}</th>
                         <td>{task.taskName}</td>

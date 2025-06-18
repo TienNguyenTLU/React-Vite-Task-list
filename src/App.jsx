@@ -3,10 +3,15 @@ import { useState } from 'react'
 import Table from './Components/Table'
 import AddModalComponent from './Components/AddModal'
 function App() {
+  const [input, setInput] = useState("");
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+  }
   return (
     <>
-      <Navbar/>
-      <Table/>
+
+      <Navbar handleInputChange={handleInputChange} />
+      <Table InputValue={input} />
     </> 
   )
 }

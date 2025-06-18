@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import SuccessAlert from './SuccessAlert';
-import status from 'daisyui/components/status';
 
 function EditModal({ task, fetchTasks }) {
     const [isOpenEdit, setIsOpenEdit] = useState(false);

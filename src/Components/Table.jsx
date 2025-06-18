@@ -6,6 +6,13 @@ import axios from "axios";
 function Table()
 {
     const [Tasks, setTasks] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [tasksPerPage, setTasksPerPage] = useState(5);
+    const indexOfLastTask = currentPage * tasksPerPage;
+    const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+    const currentTasks = Tasks.slice(indexOfFirstTask, indexOfLastTask);
+    const totalPages = Math.ceil(Tasks.length / tasksPerPage);
+    function paginate(pageNumber) { setCurrentPage(pageNumber) }
     useEffect(() => {
     axios.get('http://localhost:8080/tasks')
         .then(response => {
@@ -48,7 +55,7 @@ function Table()
                 </tr>
                 </thead>
                 <tbody>
-                {Tasks.map((task,index) => (
+                {currentTasks.map((task,index) => (
                     <tr key={task.id} className="hover">
                         <th>{index + 1}</th>
                         <td>{task.taskName}</td>
@@ -72,6 +79,13 @@ function Table()
                     </tr>
                 ))}
                 </tbody>
+                        <div className="flex justify-center mt-4 gap-2">
+                            {Array.from({ length: totalPages }, (_, i) => (
+                        <button key={i + 1} onClick={() => paginate(i + 1)} className={`btn btn-sm ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline'}`}>
+                            {i + 1}
+                        </button>
+                ))}
+            </div>
             </table>
         </div>
         </div>
